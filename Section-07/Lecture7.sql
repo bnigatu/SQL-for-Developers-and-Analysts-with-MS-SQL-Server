@@ -30,7 +30,7 @@ JOIN geo_Desert d ON c.code = d.Country; -- This is the same as using
 
 
 /*==============================================================================================
- * 2) LEFT OUT JOIN or simply LEFT JOIN
+ * 2) LEFT OUTER JOIN or simply LEFT JOIN
  *==============================================================================================*/
 -- Left outer join All rows from the first-named table (the "left" table, which 
 -- appears leftmost in the JOIN clause) are included. 
@@ -42,7 +42,7 @@ LEFT OUTER JOIN geo_Desert d
 
 
 /*==============================================================================================
- * 3) RIGHT OUT JOIN or simply RIGHT JOIN
+ * 3) RIGHT OUTER JOIN or simply RIGHT JOIN
  *==============================================================================================*/
 -- Right outer join All rows in the second-named table (the "right" table, which 
 -- appears rightmost in the JOIN clause) are included. 
@@ -54,7 +54,7 @@ RIGHT OUTER JOIN Country c
 
 
 /*==============================================================================================
- * 4) FULL OUT JOIN
+ * 4) FULL OUTER JOIN
  *==============================================================================================*/
 -- Full outer join All rows in all joined tables are included, whether they are matched or not. 
 SELECT ISNULL(geo_Desert.Country, geo_Mountain.Country) AS Country, 
@@ -183,16 +183,58 @@ go
 -- INTERSECT gives the intersection of common to both sets (A n B): 2 and 4 
  SELECT NUMBER
  FROM TABLE1
- INTERSECT      -- This combines the result of the top and bottom SELECT queries.
+ INTERSECT      -- This gives the intestection of both the top and bottom SELECT queries.
  SELECT NUMBER
  FROM TABLE2;
 
  -- EXCEPT gives values from in the left that are not in the right sets (A \ B): 1 and 3
  SELECT NUMBER
  FROM TABLE1
- EXCEPT      -- This combines the result of the top and bottom SELECT queries.
+ EXCEPT      -- This gives rows that are at the top SELECT but not in bottom SELECT queries.
  SELECT NUMBER
  FROM TABLE2;
+
+
+/*==============================================================================================
+ * 10) Casting or Converting data types
+ *==============================================================================================*/
+USE CIA_FACTBOOK_DB;
+go
+
+-- Let us combine contry name, its capital and total area for display purpose.
+-- This query will give an error since area is a float and can not be concatinated with other string.
+
+SELECT [Name] +' - '+ Capital +' - '+ Area 
+FROM Country;
+
+
+-- Using CAST
+SELECT [Name] +' - '+ Capital +' - '+ CAST(Area AS VARCHAR(50)) AS [UsingCast]
+FROM Country;
+
+-- Using CONVERT
+SELECT [Name] +' - '+ Capital +' - '+ CONVERT(VARCHAR(50), Area) AS [UsingConvert]
+FROM Country;
+
+/*
+ * Here are some examples
+ */
+
+-- Dates
+SELECT GETDATE() AS [CurrentTimeStamp],
+       CAST(GETDATE() AS DATE) AS [CastToOnlyDate],
+	   CONVERT(DATE, GETDATE()) AS [ConvertToOnlyDate],
+	   CONVERT(VARCHAR(10), GETDATE(), 112) [ConvertAlsoSupportFormating-YYYYMMDD]
+
+-- Text to INT
+SELECT '1' AS [This is Text 1],
+	   CAST('1' AS INT) AS [CAST to number 1],
+	   CONVERT(INT, '1') AS [CONVERT to number 1]
+
+-- Text to Binary
+SELECT 'SQL' AS [This is Text SQL],
+	   CAST('SQL' AS VARBINARY(50)) AS [CAST to varbinary],
+	   CONVERT(VARBINARY(50), 'SQL') AS [CONVERT to varbinary]
 
 
  /*==============================================================================================
