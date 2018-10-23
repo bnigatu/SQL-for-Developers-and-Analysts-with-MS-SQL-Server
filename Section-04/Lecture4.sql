@@ -42,15 +42,16 @@ GROUP BY Province
 -- To get a result of the aggregate function as a filter 
 -- Example: for each country, select a religion that has the most followers 
 
-SELECT R1.Country
+SELECT C.Name
       ,R1.[Name] AS Religion    
 	  ,R1.[Percentage]
 FROM dbo.Religion AS R1
+JOIN dbo.Country AS C ON C.Code = R1.Country
 WHERE R1.[Percentage] IN (SELECT MAX(R2.[Percentage]) AS [Percentage] -- this sub select is used to as a filter
 					      FROM dbo.Religion AS R2
 					      WHERE R1.Country = R2.Country
 					      GROUP BY R2.Country)
-ORDER BY  R1.Country ASC, 
+ORDER BY  C.Name ASC, 
 		  R1.[Percentage] DESC;
 
 /*==============================================================================================
@@ -79,7 +80,8 @@ FROM dbo.Mountain
 GROUP BY Mountains;
 
 -- Multiple aggregate columns 
-SELECT MAX(Elevation),MIN(Elevation),AVG(Elevation),SUM(Elevation),COUNT(Elevation)
+SELECT MAX(Elevation) as MaxElevation,
+	    MIN(Elevation) as MinElevation,AVG(Elevation),SUM(Elevation),COUNT(Elevation)
 FROM dbo.Mountain;
 
 /*==============================================================================================
@@ -98,16 +100,9 @@ FROM dbo.Mountain;
 SELECT MAX(AVG(Elevation))
 FROM dbo.Mountain;
 
-
 /*==============================================================================================
- * 6) Statistics in SQL
+ * 6) Display distint rows using GROUP BY
  *==============================================================================================*/
-SELECT COUNT(*) AS Count_Every_Column,
-   COUNT(Mountains) AS Count_Mountains,
-   COUNT(DISTINCT Mountains) AS Count_Distinct_Mountains
-FROM dbo.Mountain;
-
-
 -- Distinct another form
 SELECT Mountains
 FROM dbo.Mountain
@@ -116,9 +111,27 @@ GROUP BY Mountains;
 SELECT DISTINCT Mountains
 FROM dbo.Mountain;
 
+/*==============================================================================================
+ * 7) Statistics in SQL
+ *==============================================================================================*/
+SELECT COUNT(*) AS Count_Every_Column,
+	   COUNT(Mountains) AS Count_Mountains,
+	   COUNT(DISTINCT Mountains) AS Count_Distinct_Mountains
+FROM dbo.Mountain;
+
+
+-- Assume the infant mortality in the dbo.Population table is just mortality rate
+-- find the number of deaths using the number of population from dbo.Country
+-- hint [Mortality Rate] = ([# of deaths]/[#total population])*1000
+
+SELECT c.Name, (c.[Population]* p.Infant_Mortality)/1000.0 as NO_of_Death
+FROM dbo.Country as c
+JOIN dbo.[Population] as p on p.Country = c.Code
+
+
 
 /*==============================================================================================
- * 7) Using basic HAVING clause 
+ * 8) Using basic HAVING clause 
  *==============================================================================================*/
 
 -- Unlike ORDER BY clause we cannot use WHERE clause to filter aggregate functions
@@ -131,7 +144,7 @@ FROM dbo.Religion R
 JOIN dbo.Country C ON C.Code = R.Country
 GROUP BY C.[Name]
         ,R.[Name]
-HAVING MAX(R.[Percentage]) > 70;
+HAVING  MAX(R.[Percentage]) > 70;
 
 
  /*==============================================================================================
