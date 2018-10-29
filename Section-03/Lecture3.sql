@@ -118,7 +118,7 @@ WHERE Mountains NOT LIKE '%Mountains%';
 
 
 /*==============================================================================================
- * 5) Filter rows that are in a list of values
+ * 5) Using IN operator in WHERE clause
  *==============================================================================================*/
 
 -- Use "IN" operator to filter rows that are in the list of string, number, or date literals
@@ -137,7 +137,9 @@ SELECT [Name]
 FROM dbo.River
 WHERE [Length] IN (1400,1500, 1600);
 
+
 -- Using "IN" from Subquery
+-- List of countries and their capital cities that do have a major Desert in the country
 SELECT [Name],
 	   Capital
 FROM dbo.Country
@@ -146,7 +148,67 @@ WHERE Code IN (SELECT Country
 
 
 /*==============================================================================================
- * 6) Using BETWEEN in WHERE clause
+ * 6) Using EXISTS operator in WHERE clause
+ *==============================================================================================*/
+
+-- EXISTS operator checks the existence of any record in a subquery.
+-- The EXISTS operator returns true if the subquery returns one or more records.
+
+-- If a subquery returns 0 records then the parent query will always return 0 records.
+SELECT [Name],
+	   Capital
+FROM dbo.Country
+WHERE EXISTS (SELECT 1 as col1
+			  WHERE 1 = 0);
+
+
+-- This will return all countries even if the subquery returns only 'USA'
+SELECT [Name],
+	   Capital
+FROM dbo.Country
+WHERE EXISTS (SELECT Country  
+			  FROM dbo.geo_Desert
+			  WHERE Country ='USA');
+
+-- Comparing IN and EXISTS operators 
+-- using the previous example from IN operator
+SELECT [Name],
+	   Capital
+FROM dbo.Country
+WHERE EXISTS (SELECT Country  
+			  FROM dbo.geo_Desert
+			  WHERE Country.Code = geo_Desert.Country);
+
+
+-- There is a difference between EXISTS and IN operators in the handling of NULL.
+-- Will return 0 reocrds
+SELECT [Name],
+	   Capital
+FROM dbo.Country
+WHERE [NAME] IN (SELECT NULL as col1);
+
+-- Will record all records of the parent
+SELECT [Name],
+	   Capital
+FROM dbo.Country
+WHERE EXISTS (SELECT NULL as col1);
+
+-- EXISTS can be combined with a NOT operator to make sure values do not exist in a set
+-- List of Cities from countries that do not have any major river.
+SELECT [Name]
+	  ,Country
+	  ,Province	 
+FROM dbo.City
+WHERE NOT EXISTS (
+		SELECT Country
+		FROM dbo.geo_River
+		WHERE geo_River.Country = City.Country
+		);
+
+
+
+/*==============================================================================================
+ * 7) Using BETWEEN in WHERE clause
  *==============================================================================================*/
 
 -- To compare if a column value is in between to values use "BETWEEN" operator
@@ -167,8 +229,9 @@ FROM dbo.Mountain
 WHERE Elevation BETWEEN 7000 AND 9000;
 
 
+
 /*==============================================================================================
- * 7) NULL in WHERE clause
+ * 8) NULL in WHERE clause
  *==============================================================================================*/
 
 -- You cannot compare NULL columns using regular comparison operators
