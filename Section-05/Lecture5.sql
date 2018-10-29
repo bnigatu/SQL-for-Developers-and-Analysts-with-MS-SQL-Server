@@ -113,6 +113,79 @@ JOIN (SELECT Country, MAX([Percentage]) AS [Max_Percentage] -- this sub select i
 	) AS R2 ON R2.Country = C.Code AND R2.[Max_Percentage] = R1.[Percentage]
 ORDER BY  Country ASC, [Max_Percentage] DESC
 
+ /*==============================================================================================
+ * Practice Questions
+ *==============================================================================================*/
+ -- 1) Assume you are working in the coming election and try to find the total population people 
+ --	   who live in the most populated city for every state in the United States. 
+ --	   Find the total number of people who live in cities?
+
+SELECT SUM(max_population) AS total_max_population
+FROM (
+		SELECT province, Max(Population) max_population 
+		FROM dbo.City
+		GROUP BY province
+	) AS Sub1;
+
+--Method 2
+WITH CTE AS (
+		SELECT province, Max(Population) max_population 
+		FROM dbo.City
+		GROUP BY province
+) 
+SELECT SUM(max_population)
+FROM CTE;
+
+ -- 2) Find a city with a minimum population size from a State/Province that has at least one city
+ --	   with a population greater than 'Denver'
+
+SELECT c2.Province, 
+	   c1.Name as CityName,
+	   c2.MinPopulation,
+	   c2.MaxPopulation
+FROM City c1
+INNER JOIN (SELECT Province, min(Population) as MinPopulation, max(Population) as MaxPopulation
+		    FROM City  			
+			GROUP BY Province) AS c2 on C2.Province = c1.Province 
+WHERE c1.Country = 'USA'
+GROUP BY c2.Province, 
+	   c1.Name,
+	   c2.MinPopulation,
+	   c2.MaxPopulation,
+	   C1.Population 
+HAVING MinPopulation = C1.Population 
+      and c2.MaxPopulation> (SELECT Population
+							FROM City c3
+							WHERE Name = 'Denver'); 
+
+-- Method 2
+SELECT Province, 
+	   min(Population) as MinPopulation, 
+	   max(Population) as MaxPopulation, 
+	  (
+		   SELECT NAME 
+		   FROM City c2  
+		   WHERE c2.Province = City.Province and
+				 min(City.Population) = c2.Population	  
+	  )
+FROM City
+WHERE Country = 'USA'
+GROUP BY Province
+HAVING max(Population) >  (SELECT Population
+							FROM City c3
+							WHERE Name = 'Denver'); 
+
+-- Find Ten Highest GDP per Capita  
+-- Find formula : https://www.thebalance.com/per-capita-what-it-means-calculation-how-to-use-it-3305876
+-- More about GDP per Capita https://www.thebalance.com/gdp-per-capita-formula-u-s-compared-to-highest-and-lowest-3305848
+
+SELECT TOP 10 c.Name, 
+			  c.Population, 
+			  e.GDP*1000 AS GDP, 
+			  e.GDP*1000000.0/c.Population AS [GDP-per-Capita]
+FROM Country c
+INNER JOIN Economy e on e.Country = c.Code
+ORDER BY e.GDP*1000.0/c.Population DESC
 
  /*==============================================================================================
  * Exercise Questions
