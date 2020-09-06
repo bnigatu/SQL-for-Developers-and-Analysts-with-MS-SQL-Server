@@ -28,7 +28,7 @@ CREATE TABLE Country (
 	);
 
 CREATE TABLE Province (
-	Name VARCHAR(50) CONSTRAINT PrName NOT NULL
+	[Name] VARCHAR(50) CONSTRAINT PrName NOT NULL
 	,Country VARCHAR(4) CONSTRAINT PrCountry NOT NULL
 	,[Population] FLOAT CONSTRAINT PrPop CHECK (Population >= 0)
 	,Area FLOAT CONSTRAINT PrAr CHECK (Area >= 0)
@@ -39,7 +39,7 @@ CREATE TABLE Province (
 	);
 
 CREATE TABLE City (
-	 Name VARCHAR(50)
+	 [Name] VARCHAR(50)
 	,Country VARCHAR(4)
 	,Province VARCHAR(50)
 	,[Population] FLOAT CONSTRAINT CityPop CHECK (Population >= 0)
@@ -63,7 +63,7 @@ CREATE TABLE Economy (
 	,CONSTRAINT FK_EconomyCountry FOREIGN KEY (Country) REFERENCES Country(Code)
 	);
 
-CREATE TABLE Population (
+CREATE TABLE [Population] (
 	Country VARCHAR(4)
 	,Population_Growth FLOAT
 	,Infant_Mortality FLOAT
@@ -105,7 +105,7 @@ CREATE TABLE EthnicGroup (
 	,CONSTRAINT FK_EthnicGroupCountry FOREIGN KEY (Country) REFERENCES Country(Code)
 	);
 
-CREATE TABLE Countrypops (
+CREATE TABLE CountryPops (
 	Country VARCHAR(4)
 	,[Year] FLOAT CONSTRAINT CountryPopsYear CHECK ([Year] >= 0)
 	,[Population] FLOAT CONSTRAINT CountryPopsPop CHECK (Population >= 0)
@@ -113,21 +113,21 @@ CREATE TABLE Countrypops (
 	,CONSTRAINT FK_CountrypopsCountry FOREIGN KEY (Country) REFERENCES Country(Code)
 	);
 
-CREATE TABLE Countryothername (
+CREATE TABLE CountryOtherName (
 	Country VARCHAR(4)
 	,othername VARCHAR(50)
 	,CONSTRAINT CountryOthernameKey PRIMARY KEY (Country,othername)
 	,CONSTRAINT FK_CountryothernameCountry FOREIGN KEY (Country) REFERENCES Country(Code)
 	);
 
-CREATE TABLE Countrylocalname (
+CREATE TABLE CountryLocalName (
 	Country VARCHAR(4)
 	,localname NVARCHAR(120)
 	,CONSTRAINT CountrylocalnameKey PRIMARY KEY (Country)
 	,CONSTRAINT FK_CountrylocalnameCountry FOREIGN KEY (Country) REFERENCES Country(Code)
 	);
 
-CREATE TABLE Provpops (
+CREATE TABLE ProvPops (
 	Province VARCHAR(50)
 	,Country VARCHAR(4)
 	,[Year] FLOAT CONSTRAINT ProvPopsYear CHECK ([Year] >= 0)
@@ -137,7 +137,7 @@ CREATE TABLE Provpops (
 	,CONSTRAINT FK_ProvpopsProvince FOREIGN KEY (Province,Country) REFERENCES Province([Name],Country)
 	);
 
-CREATE TABLE Provinceothername (
+CREATE TABLE ProvinceOtherName (
 	Province VARCHAR(50)
 	,Country VARCHAR(4)
 	,othername VARCHAR(50)
@@ -155,7 +155,7 @@ CREATE TABLE Provincelocalname (
 	,CONSTRAINT FK_ProvincelocalnameProvince FOREIGN KEY (Province,Country) REFERENCES Province([Name],Country)
 	);
 
-CREATE TABLE Citypops (
+CREATE TABLE CityPops (
 	City VARCHAR(50)
 	,Country VARCHAR(4)
 	,Province VARCHAR(50)
@@ -167,7 +167,7 @@ CREATE TABLE Citypops (
 	,CONSTRAINT FK_CitypopsCity FOREIGN KEY (City,Province,Country) REFERENCES City(Name,Province,Country)
 	);
 
-CREATE TABLE Cityothername (
+CREATE TABLE CityOtherName (
 	City VARCHAR(50)
 	,Country VARCHAR(4)
 	,Province VARCHAR(50)
@@ -195,7 +195,7 @@ CREATE TABLE Continent (
 	,CONSTRAINT ContinentKey PRIMARY KEY ([Name])
 	);
 
-CREATE TABLE borders (
+CREATE TABLE Borders (
 	Country1 VARCHAR(4)
 	,Country2 VARCHAR(4)
 	,[Length] FLOAT CHECK (Length > 0)
@@ -204,7 +204,7 @@ CREATE TABLE borders (
 	,CONSTRAINT FK_bordersCountry2 FOREIGN KEY (Country2) REFERENCES Country(Code)
 	);
 
-CREATE TABLE encompasses (
+CREATE TABLE Encompasses (
 	 Country VARCHAR(4) NOT NULL
 	,Continent VARCHAR(20) NOT NULL
 	,Percentage FLOAT
@@ -228,12 +228,12 @@ CREATE TABLE Organization (
 	,CONSTRAINT FK_OrganizationCity FOREIGN KEY (City,Province,Country) REFERENCES City(Name,Province,Country)
 	);
 
-CREATE TABLE isMember (
+CREATE TABLE IsMember (
 	Country VARCHAR(4)
 	,Organization VARCHAR(12)
 	,Type VARCHAR(60) DEFAULT ('member')
 	,CONSTRAINT MemberKey PRIMARY KEY (Country,Organization)
-	,CONSTRAINT FK_isMemberCountry FOREIGN KEY (Country) REFERENCES Country(Code)
+	,CONSTRAINT FK_IsMemberCountry FOREIGN KEY (Country) REFERENCES Country(Code)
 	);
 
 CREATE TABLE Mountain (
@@ -415,7 +415,7 @@ CREATE TABLE geo_Estuary (
 	,CONSTRAINT FK_geo_EstuaryRiver FOREIGN KEY (River) REFERENCES River(Name)
 	);
 
-CREATE TABLE mergesWith (
+CREATE TABLE MergesWith (
 	Sea1 VARCHAR(50)
 	,Sea2 VARCHAR(50)
 	,CONSTRAINT MergesWithKey PRIMARY KEY (Sea1,Sea2)
@@ -423,7 +423,7 @@ CREATE TABLE mergesWith (
 	,CONSTRAINT FK_mergesWithSea2 FOREIGN KEY (Sea2) REFERENCES Sea(Name)
 	);
 
-CREATE TABLE located (
+CREATE TABLE Located (
 	City VARCHAR(50)
 	,Province VARCHAR(50)
 	,Country VARCHAR(4)
@@ -438,7 +438,7 @@ CREATE TABLE located (
 	,CONSTRAINT FK_locatedRiver FOREIGN KEY (River) REFERENCES River(Name)
 	);
 
-CREATE TABLE locatedOn (
+CREATE TABLE LocatedOn (
 	City VARCHAR(50)
 	,Province VARCHAR(50)
 	,Country VARCHAR(4)
@@ -449,7 +449,7 @@ CREATE TABLE locatedOn (
 	,CONSTRAINT FK_locatedOnCity FOREIGN KEY (City,Province,Country) REFERENCES City(Name,Province,Country)
 	);
 
-CREATE TABLE islandIn (
+CREATE TABLE IslandIn (
 	Island VARCHAR(50)
 	,Sea VARCHAR(50)
 	,Lake VARCHAR(50)
